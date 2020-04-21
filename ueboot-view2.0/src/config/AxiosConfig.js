@@ -26,6 +26,7 @@ export default class AxiosConfig {
             if ( conf && conf.baseURL ) {
                 config.baseURL = conf.baseURL;
             }
+            config.credentials ='include';
             return config;
         }, function (error) {
             iView.LoadingBar.error();
@@ -53,7 +54,12 @@ export default class AxiosConfig {
 
             // 403 状态执行页面跳转，其余状态不跳转
             if ( error.response.status === 403 || error.response.status === 401 ) {
-                toLogin(conf);
+                let msg = error.response.data.message;
+                //默认提示页面配置的话术
+                if(error.response.status === 401){
+                    msg = conf.notLoginMsg|| error.response.data.message
+                }
+                toLogin(conf,msg);
                 return Promise.reject(error.response.data);
             } else {
                 iView.Message.error({
@@ -64,7 +70,7 @@ export default class AxiosConfig {
             }
         });
 
-        function toLogin (conf) {
+        function toLogin (conf,msg) {
             if ( showNotLogin ) {
                 return;
             }
@@ -75,7 +81,7 @@ export default class AxiosConfig {
                     closable: false,
                     'mask-closable': false,
                     title: '提示',
-                    content: cnf.axios.notLoginMsg,
+                    content: msg,
                     loading: true,
                     onOk: () => {
                         setTimeout(() => {
