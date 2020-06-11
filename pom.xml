@@ -12,7 +12,6 @@
         <module>ueboot-parent-acm</module>
         <module>ueboot-core-acm</module>
         <module>ueboot-shiro-acm</module>
-        <module>ueboot-generator-acm</module>
         <module>ueboot-cryption-acm</module>
     </modules>
     <parent>
