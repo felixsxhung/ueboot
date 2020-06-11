@@ -43,7 +43,6 @@ public class UserRoleController {
     @Resource
     private ShiroEventListener shiroEventListener;
 
-    @RequiresPermissions("ueboot:userRole:read")
     @PostMapping(value = "/page")
     public Response<Page<UserRoleResp>> page(@PageableDefault(value = 15, sort = {"id"}, direction = Sort.Direction.DESC)
                                                      Pageable pageable, @RequestBody(required = false) UserRoleFindReq req) {
@@ -57,7 +56,6 @@ public class UserRoleController {
         return new Response<>(body);
     }
 
-    @RequiresPermissions("ueboot:userRole:read")
     @PostMapping(value = "/findByRoleId")
     public Response<List<UserRoleResp>> findByUserId(@RequestBody UserRoleReq req) {
         List<UserRole> users = userRoleService.findByUserId(req.getUserId());
@@ -70,14 +68,12 @@ public class UserRoleController {
         return new Response<>(result);
     }
 
-    @RequiresPermissions("ueboot:userRole:save")
     @PostMapping(value = "/save")
     public Response<Void> save(@RequestBody UserRoleReq req) {
         userRoleService.saveUserRole(req.getUserId(), req.getRoleIds());
         return new Response<>();
     }
 
-    @RequiresPermissions("ueboot:userRole:delete")
     @PostMapping(value = "/delete")
     public Response<Void> delete(Long[] id) {
         userRoleService.delete(id);
@@ -88,7 +84,6 @@ public class UserRoleController {
         return new Response<>();
     }
 
-    @RequiresPermissions("ueboot:userRole:read")
     @GetMapping(value = "/{id}")
     public Response<UserRoleResp> get(@PathVariable Long id) {
         UserRole entity = userRoleService.get(id);

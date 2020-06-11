@@ -56,15 +56,14 @@ public class UserController {
     private ShiroEventListener shiroEventListener;
 
     @Resource
-    private RedisTemplate<String,String> redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
 
-
-    @RequiresPermissions("ueboot:user:read")
     @PostMapping(value = "/page")
-    public Response<Page<UserResp>> page(@PageableLimits(maxSize = 10000)
-                                         @PageableDefault(value = 15, sort = {"id"}, direction = Sort.Direction.ASC)
-                                                 Pageable pageable, @RequestBody(required = false) UserFindReq req) {
-        Page<User> entities = userService.findBy(pageable);
+    public Response<Page<UserResp>> page(@PageableLimits(maxSize = 10000) @PageableDefault(value = 15, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable, @RequestBody(required = false) UserFindReq req) {
+
+        String optUserName = (String) SecurityUtils.getSubject().getPrincipal();
+        User loginUser = this.userService.findByUserName(optUserName);
+        Page<User> entities = userService.findBy(pageable, req.getUsername(), loginUser.getSystem());
         Page<UserResp> body = entities.map(entity -> {
             UserResp resp = new UserResp();
             BeanUtils.copyProperties(entity, resp);
@@ -74,22 +73,24 @@ public class UserController {
         return new Response<>(body);
     }
 
-
-    @RequiresPermissions("ueboot:user:save")
     @PostMapping(value = "/save")
     public Response<Void> save(@RequestBody UserReq req) {
-        User entity = null;
+        User entity;
+        // 保存用户日志记录
+        String optUserName = (String) SecurityUtils.getSubject().getPrincipal();
         if (req.getId() == null) {
             entity = new User();
             User user = this.userService.findByUserName(req.getUserName());
             if (user != null) {
                 throw new BusinessException("当前用户名已经存在，不能重复添加!");
             }
+            User loginUser = this.userService.findByUserName(optUserName);
+            entity.setSystem(loginUser.getSystem());
         } else {
             entity = userService.findById(req.getId());
         }
 
-        BeanUtils.copyProperties(req, entity, "password");
+        BeanUtils.copyProperties(req, entity, "type", "system", "password");
         if (StringUtil.isNotBlank(req.getPassword())) {
             entity.setPassword(PasswordUtil.sha512(entity.getUserName(), req.getPassword()));
             if (req.getCredentialExpiredDate() == null) {
@@ -100,27 +101,23 @@ public class UserController {
             }
         }
         //解锁
-        if(!req.isLocked()){
-            String key = MessageFormat.format(RetryLimitHashedCredentialsMatcher .PASSWORD_RETRY_CACHE,req.getUserName());
+        if (!req.isLocked()) {
+            String key = MessageFormat.format(RetryLimitHashedCredentialsMatcher.PASSWORD_RETRY_CACHE, req.getUserName());
             redisTemplate.delete(key);
         }
         userService.save(entity);
 
-        // 保存用户日志记录
-        String optUserName = (String) SecurityUtils.getSubject().getPrincipal();
         this.shiroEventListener.saveUserEvent(optUserName, req.getUserName());
         return new Response<>();
     }
 
 
-    @RequiresPermissions("ueboot:user:delete")
     @PostMapping(value = "/delete")
     public Response<Void> delete(Long[] id) {
         userService.deleteById(id);
         return new Response<>();
     }
 
-    @RequiresPermissions("ueboot:user:read")
     @GetMapping(value = "/{id}")
     public Response<UserResp> get(@PathVariable Long id) {
         User entity = userService.get(id);

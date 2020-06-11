@@ -9,7 +9,6 @@ import com.ueboot.core.repository.BaseRepository;
 import com.ueboot.core.service.impl.BaseServiceImpl;
 import com.ueboot.shiro.entity.Permission;
 import com.ueboot.shiro.entity.Resources;
-import com.ueboot.shiro.entity.UserRole;
 import com.ueboot.shiro.repository.permission.PermissionRepository;
 import com.ueboot.shiro.repository.resources.ResourcesRepository;
 import com.ueboot.shiro.repository.userrole.UserRoleRepository;
@@ -142,5 +141,10 @@ public class ResourcesServiceImpl extends BaseServiceImpl<Resources> implements 
             String optUserName = (String) SecurityUtils.getSubject().getPrincipal();
             this.shiroEventListener.deleteResourceEvent(optUserName, ids);
         }
+    }
+
+    @Override
+    public List<Resources> findBySystem(String system) {
+        return resourcesRepository.findBySystemOrSystem(system,"system");
     }
 }

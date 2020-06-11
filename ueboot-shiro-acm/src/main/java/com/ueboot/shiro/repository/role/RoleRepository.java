@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
 * 这个类里面使用spring data jpa 方式实现数据库的CRUD
 * Created on 2018-08-21 09:40:34
@@ -25,4 +27,6 @@ public interface RoleRepository extends BaseRepository<Role, Long>,RoleBaseRepos
      * @return 角色对象
      */
     Role findByName(String name);
+
+    List<Role> findBySystem(String system);
 }

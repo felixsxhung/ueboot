@@ -22,6 +22,7 @@ public class ResourcesResp {
     private Long id;
     private String name;
     private String resourceType;
+    private String system;
     private String url;
     private String themeJson;
     private String permission;

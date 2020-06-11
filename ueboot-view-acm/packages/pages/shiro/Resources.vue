@@ -59,8 +59,7 @@ export default {
               type: 'select',
               name: 'resourceType',
               required: true,
-              data: [{ 'name': '菜单组', 'value': '菜单组' }, { 'name': '菜单', 'value': '菜单' },
-                { 'name': '功能', 'value': '功能' }
+              data: [{ 'name': '菜单组', 'value': '菜单组' }, { 'name': '菜单', 'value': '菜单' }, { 'name': '功能', 'value': '功能' }
               ],
               onChange: (value) => {
                 this.changeResourceType(value)
@@ -118,6 +117,13 @@ export default {
               name: 'available',
               data: [{ 'name': '启用', 'value': 'true' }, { 'name': '不启用', 'value': 'false' }
               ],
+              init: 'true'
+            },
+            {
+              label: '归属系统',
+              type: 'select',
+              name: 'system',
+              data: [{ 'name': '物业系统', 'value': 'property' }, { 'name': '财务系统', 'value': 'finance' }, { 'name': '应急调度系统', 'value': 'emergency' }],
               init: 'true'
             }
           ],

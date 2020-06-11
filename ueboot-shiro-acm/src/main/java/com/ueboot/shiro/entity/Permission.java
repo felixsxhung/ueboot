@@ -13,6 +13,7 @@ import java.io.Serializable;
  * 角色与菜单资源之间的关系（设定用户的权限）
  * @author yangkui
  * @author Neel
+ * @author zivhung
  */
 @Setter
 @Getter

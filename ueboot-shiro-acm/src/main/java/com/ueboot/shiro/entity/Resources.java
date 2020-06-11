@@ -48,6 +48,10 @@ public class Resources extends AbstractVersionEntity<Long> {
     @Column(name = "RESOURCE_TYPE")
     private String resourceType;
 
+    /** 所属系统（finance 财务，property 物业，emergency 紧急调度） */
+    @Column(name = "SYSTEM")
+    private String system;
+
     /**
      * 资源路径
      */

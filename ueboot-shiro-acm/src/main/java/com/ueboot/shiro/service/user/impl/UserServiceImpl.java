@@ -16,12 +16,15 @@ import com.ueboot.shiro.shiro.ShiroEventListener;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created on 2018-08-14 10:47:55
@@ -52,13 +55,13 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
      * 根据用户名和密码查找用户
      *
      * @param userName 用户名
+     *
      * @return 用户，不存在则返回空对象
      */
     @Override
     public User findByUserName(String userName) {
         return userRepository.findByUserName(userName);
     }
-
 
     @Override
     @Transactional(rollbackFor = Exception.class, timeout = 30, propagation = Propagation.REQUIRED)
@@ -71,10 +74,16 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         this.userRepository.save(user);
     }
 
+    @Override
+    public Page<User> findBy(Pageable pageable, String username, String system) {
+        return this.userRepository.pagingBy(pageable, username, system);
+    }
+
     /**
      * 根据ID查找用户
      *
      * @param id 主键ID
+     *
      * @return 用户对象
      */
     @Override

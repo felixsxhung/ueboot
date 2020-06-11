@@ -5,16 +5,15 @@
  */
 package com.ueboot.shiro.service.role.impl;
 
+import com.ueboot.core.repository.BaseRepository;
+import com.ueboot.core.service.impl.BaseServiceImpl;
 import com.ueboot.shiro.entity.Permission;
 import com.ueboot.shiro.entity.Role;
-import com.ueboot.core.repository.BaseRepository;
 import com.ueboot.shiro.repository.permission.PermissionRepository;
 import com.ueboot.shiro.repository.role.RoleRepository;
-import com.ueboot.core.service.impl.BaseServiceImpl;
 import com.ueboot.shiro.repository.userrole.UserRoleRepository;
 import com.ueboot.shiro.service.role.RoleService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,30 +21,33 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
  * Created on 2018-08-21 09:40:34
  *
  * @author yangkui
- * @since 2.1.0 by ueboot-generator
+ * @author zivhung update 2020-6-11 11:44:00
  */
 @Slf4j
 @Service
 @ConditionalOnMissingBean(name = "roleService")
 public class RoleServiceImpl extends BaseServiceImpl<Role> implements RoleService {
-    @Autowired
-    private RoleRepository roleRepository;
 
-    @Resource
-    private PermissionRepository permissionRepository;
+    private final RoleRepository roleRepository;
 
-    @Autowired
-    private UserRoleRepository userRoleRepository;
+    private final PermissionRepository permissionRepository;
+
+    private final UserRoleRepository userRoleRepository;
+
+    public RoleServiceImpl(RoleRepository roleRepository, UserRoleRepository userRoleRepository, PermissionRepository permissionRepository) {
+        this.roleRepository = roleRepository;
+        this.userRoleRepository = userRoleRepository;
+        this.permissionRepository = permissionRepository;
+    }
 
     @Override
-    protected BaseRepository getBaseRepository() {
+    protected BaseRepository<Role, Long> getBaseRepository() {
         return roleRepository;
     }
 
@@ -58,8 +60,7 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements RoleServic
     @Transactional(rollbackFor = Exception.class, timeout = 60, propagation = Propagation.REQUIRED)
     public void deleteRole(Long[] roleIds) {
         //先删除角色关联的资源
-        for (int i = 0; i < roleIds.length; i++) {
-            Long roleId = roleIds[i];
+        for (Long roleId : roleIds) {
             List<Permission> permissions = permissionRepository.findByRoleId(roleId);
             permissionRepository.deleteAll(permissions);
             this.delete(roleId);
@@ -67,13 +68,18 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements RoleServic
     }
 
     @Override
-    public Page<Role> findByName(Pageable pageable, String name) {
-        return this.roleRepository.findByNameLike(pageable, name);
+    public Page<Role> findByName(Pageable pageable, String name, String system) {
+        return this.roleRepository.findByNameLike(pageable, name, system);
     }
 
 
     @Override
     public Long statisticUserByRoleId(Long id) {
         return userRoleRepository.statisticUserSumByRoleId(id);
+    }
+
+    @Override
+    public List<Role> findBySystem(String system) {
+        return roleRepository.findBySystem(system);
     }
 }

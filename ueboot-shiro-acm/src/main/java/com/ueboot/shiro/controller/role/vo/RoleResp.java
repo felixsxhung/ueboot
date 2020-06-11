@@ -21,7 +21,7 @@ import lombok.Setter;
 public class RoleResp {
     private Long id;
     private String code;
-    private String orgCode;
+    private String system;
     private String role;
     private String name;
     private String description;

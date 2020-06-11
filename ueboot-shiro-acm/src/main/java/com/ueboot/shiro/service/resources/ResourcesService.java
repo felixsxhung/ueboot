@@ -49,4 +49,6 @@ public interface ResourcesService extends BaseService<Resources> {
      * @param ids 要删的资源ID列表
      */
     void deleteResource(Long[] ids);
+
+    List<Resources> findBySystem(String system);
 }

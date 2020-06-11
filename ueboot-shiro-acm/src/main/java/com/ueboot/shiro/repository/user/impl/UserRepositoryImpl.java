@@ -27,18 +27,19 @@ public class UserRepositoryImpl extends DefaultJpaRepository<User,Long> implemen
 
 
     @Override
-    public Page<User> pageByUserNameAndFullName(Pageable pageable, String userName, String fullName) {
+    public Page<User> pagingBy(Pageable pageable, String username, String system) {
 
         StringQuery query = StringQuery.newQuery()
-                .query(" FROM " + User.class.getName() + " u WHERE 1=1 ")
+                .query(" FROM " + User.class.getName() + " WHERE id > :id ")
+                .param("id", -1L)
 
-                .predicateHasText(userName)
-                .query(" AND userName like :userName")
-                .likeParam("userName", userName)
+                .predicateHasText(username)
+                .query(" AND userName like :username")
+                .likeParam("username", username)
 
-                .predicateHasText(fullName)
-                .query(" AND fullName like :fullName")
-                .likeParam("fullName", fullName)
+                .predicate(!"system".equals(system))
+                .query(" AND system = :system")
+                .param("system", system)
 
                 .predicate(true)
                 .build();

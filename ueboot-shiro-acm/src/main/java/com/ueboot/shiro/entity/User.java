@@ -4,7 +4,6 @@ import com.ueboot.core.entity.AbstractVersionEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -12,6 +11,7 @@ import java.util.Date;
 /**
  * Created by zl  on 2017-11-10 15:39:14.
  * - 用户实体类
+ *
  * @author zl
  */
 
@@ -22,14 +22,20 @@ import java.util.Date;
 
 @Table(name = "PROPERTY_SYS_USER")
 public class User extends AbstractVersionEntity<Long> {
+
+    public static final String TYPE_USER = "user";
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** 机构CODE */
-    @Column(name = "ORG_CODE")
-    private String orgCode;
+    /** 所属系统（finance 财务管理员，property 物业管理员，emergency 指挥调度管理员） */
+    @Column(name = "SYSTEM")
+    private String system;
+
+    /** 用户类型：管理员 admin , 用户 user */
+    @Column(name = "TYPE")
+    private String type = TYPE_USER;
 
     /** 用户名 */
     @Column(name = "USERNAME")
@@ -39,12 +45,12 @@ public class User extends AbstractVersionEntity<Long> {
     @Column(name = "PASSWORD")
     private String password;
 
-    /**用户所属的角色名称，用于页面查看使用。不做权限配置*/
+    /** 用户所属的角色名称，用于页面查看使用。不做权限配置 */
     @Column(name = "ROLE_NAMES")
     private String roleNames;
 
-    /**用户所属的角色id，用于快速获取用户角色，分配角色时会进行更新*/
-    @Column(name="ROLE_IDS")
+    /** 用户所属的角色id，用于快速获取用户角色，分配角色时会进行更新 */
+    @Column(name = "ROLE_IDS")
     private String roleIds;
 
     /**

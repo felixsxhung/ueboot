@@ -15,6 +15,8 @@ import com.ueboot.shiro.repository.resources.ResourcesBaseRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 
+import java.util.List;
+
 /**
 * 自定义接口实现类，可以使用父类DefaultJpaRepository当中的find(),findBySql等方法实现自定义的StringQuery查询
 * 相关使用示例，参见文档http://docs.ueboot.com

@@ -9,12 +9,13 @@ import com.alibaba.fastjson.JSON;
 import com.ueboot.core.http.response.Response;
 import com.ueboot.shiro.controller.resources.vo.*;
 import com.ueboot.shiro.entity.Resources;
+import com.ueboot.shiro.entity.User;
 import com.ueboot.shiro.service.resources.ResourcesService;
+import com.ueboot.shiro.service.user.UserService;
 import com.ueboot.shiro.shiro.ShiroEventListener;
 import jodd.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.util.Assert;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -42,18 +43,27 @@ import java.util.Map;
 public class ResourcesController {
 
     @Resource
+    private UserService userService;
+
+    @Resource
     private ResourcesService resourcesService;
 
     // shiro权限记录
     @Resource
     private ShiroEventListener shiroEventListener;
 
-    @RequiresPermissions("ueboot:resources:read")
     @PostMapping(value = "/list")
     public Response<List<ResourcesResp>> list() {
-        List<Resources> all = this.resourcesService.findAll();
+        String optUserName = (String) SecurityUtils.getSubject().getPrincipal();
+        User loginUser = this.userService.findByUserName(optUserName);
+        List<Resources> resourcesList;
+        if ("system".equals(loginUser.getSystem())) {
+            resourcesList = this.resourcesService.findAll();
+        } else {
+            resourcesList = this.resourcesService.findBySystem(loginUser.getSystem());
+        }
         List<ResourcesResp> retval = new ArrayList<>();
-        all.forEach((r) -> {
+        resourcesList.forEach((r) -> {
             ResourcesResp resp = new ResourcesResp();
             BeanUtils.copyProperties(r, resp);
             if (r.getParent() != null) {
@@ -64,12 +74,9 @@ public class ResourcesController {
         return new Response<>(retval);
     }
 
-
-    @RequiresPermissions("ueboot:resources:read")
     @PostMapping(value = "/page")
-    public Response<Page<ResourcesResp>> page(@PageableDefault(value = 15, sort = {"id"}, direction = Sort.Direction.ASC)
-                                                      Pageable pageable, @RequestBody(required = false) ResourcesFindReq req) {
-        Page<Resources> entities = null;
+    public Response<Page<ResourcesResp>> page(@PageableDefault(value = 15, sort = {"id"}, direction = Sort.Direction.ASC) Pageable pageable, @RequestBody(required = false) ResourcesFindReq req) {
+        Page<Resources> entities;
         if (req.getParentId() == null) {
             entities = resourcesService.findBy(pageable);
         } else {
@@ -87,11 +94,9 @@ public class ResourcesController {
         return new Response<>(body);
     }
 
-
-    @RequiresPermissions("ueboot:resources:save")
     @PostMapping(value = "/save")
     public Response<Void> save(@RequestBody ResourcesReq req) {
-        Resources entity = null;
+        Resources entity;
         if (req.getId() == null) {
             entity = new Resources();
         } else {
@@ -129,14 +134,12 @@ public class ResourcesController {
         return new Response<>();
     }
 
-    @RequiresPermissions("ueboot:resources:delete")
     @PostMapping(value = "/delete")
     public Response<Void> delete(Long[] id) {
         resourcesService.deleteResource(id);
         return new Response<>();
     }
 
-    @RequiresPermissions("ueboot:resources:read")
     @GetMapping(value = "/{id}")
     public Response<ResourcesResp> get(@PathVariable Long id) {
         Resources entity = resourcesService.get(id);

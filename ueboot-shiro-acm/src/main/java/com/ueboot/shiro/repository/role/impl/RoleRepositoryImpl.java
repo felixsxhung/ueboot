@@ -28,10 +28,15 @@ public class RoleRepositoryImpl extends DefaultJpaRepository<Role, Long> impleme
 
 
     @Override
-    public Page<Role> findByNameLike(Pageable pageable, String name) {
+    public Page<Role> findByNameLike(Pageable pageable, String name, String system) {
         StringQuery query = StringQuery.newQuery()
 
-                .query(" FROM " + Role.class.getName() + " r WHERE 1=1 ")
+                .query(" FROM " + Role.class.getName() + " WHERE id > :id ")
+                .param("id", -1L)
+
+                .predicate(!"system".equals(system))
+                .query(" AND system = :system")
+                .param("system", system)
 
                 .predicateHasText(name)
                 .query(" AND r.name like :name ")

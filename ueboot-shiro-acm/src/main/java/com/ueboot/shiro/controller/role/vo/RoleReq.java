@@ -24,6 +24,7 @@ public class RoleReq {
     private Long id;
     @NotBlank
     private String name;
+    private String system;
     private String description;
     private Boolean available;
 }

@@ -5,6 +5,7 @@
 */
 package com.ueboot.shiro.repository.userrole;
 
+import com.ueboot.shiro.entity.Role;
 import com.ueboot.shiro.entity.UserRole;
 import com.ueboot.core.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
@@ -39,7 +40,4 @@ public interface UserRoleRepository extends BaseRepository<UserRole, Long>,UserR
      * @return 用户列表
      */
     List<UserRole> findByRoleId(Long roleId);
-
-
-
 }

@@ -7,6 +7,8 @@ package com.ueboot.shiro.service.user;
 
 import com.ueboot.shiro.entity.User;
 import com.ueboot.core.service.BaseService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Created on 2018-08-14 10:47:55
@@ -36,4 +38,6 @@ public interface UserService extends BaseService<User> {
      * @param username
      */
     void lockByUserName(String username);
+
+    Page<User> findBy(Pageable pageable, String username, String system);
 }

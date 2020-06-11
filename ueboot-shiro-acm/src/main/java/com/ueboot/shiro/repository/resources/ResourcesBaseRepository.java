@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
 * 1.这里可以写基于StringQuery方式的自定义的接口，但是需要在实现类ResourcesRepositoryImpl当中进行实现，
 * 2.如果使用Spring Data JPA语法，则写到ResourcesRepository接口当中

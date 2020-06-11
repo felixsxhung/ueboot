@@ -47,7 +47,6 @@ public class PermissionController {
     private ShiroEventListener shiroEventListener;
 
 
-    @RequiresPermissions("ueboot:permission:read")
     @RequestMapping(value = "/page", method = RequestMethod.POST)
     public Response<Page<PermissionResp>> page(@PageableDefault(value = 15, sort = {"id"}, direction = Sort.Direction.DESC)
                                                        Pageable pageable, @RequestBody(required = false) PermissionFindReq req) {
@@ -67,7 +66,6 @@ public class PermissionController {
      * @param req
      * @return
      */
-    @RequiresPermissions("ueboot:permission:read")
     @PostMapping(value = "/findByRoleId")
     public Response<List<PermissionResp>> findByUserId(@RequestBody PermissionReq req) {
         List<Permission> permissions = permissionService.findByRoleId(req.getRoleId());
@@ -82,14 +80,12 @@ public class PermissionController {
         return new Response<>(result);
     }
 
-    @RequiresPermissions("ueboot:permission:save")
     @PostMapping(value = "/save")
     public Response<Void> save(@RequestBody PermissionReq req) {
         permissionService.saveRolePermission(req.getRoleId(), req.getResourceIds());
         return new Response<>();
     }
 
-    @RequiresPermissions("ueboot:permission:delete")
     @PostMapping(value = "/delete")
     public Response<Void> delete(Long[] id) {
         permissionService.delete(id);
@@ -101,7 +97,6 @@ public class PermissionController {
         return new Response<>();
     }
 
-    @RequiresPermissions("ueboot:permission:read")
     @GetMapping(value = "/{id}")
     public Response<PermissionResp> get(@PathVariable Long id) {
         Permission entity = permissionService.get(id);

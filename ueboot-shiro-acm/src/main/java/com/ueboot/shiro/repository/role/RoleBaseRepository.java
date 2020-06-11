@@ -8,7 +8,6 @@ package com.ueboot.shiro.repository.role;
 import com.ueboot.shiro.entity.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
 
 /**
 * 1.这里可以写基于StringQuery方式的自定义的接口，但是需要在实现类RoleRepositoryImpl当中进行实现，
@@ -21,6 +20,6 @@ import org.springframework.stereotype.Repository;
 public interface RoleBaseRepository  {
 
 
-    Page<Role> findByNameLike(Pageable pageable, String name);
+    Page<Role> findByNameLike(Pageable pageable, String name, String system);
 
 }

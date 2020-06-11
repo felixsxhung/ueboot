@@ -21,7 +21,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserFindReq {
     private Long id;
-    private String orgCode;
     private String username;
-    private String password;
 }

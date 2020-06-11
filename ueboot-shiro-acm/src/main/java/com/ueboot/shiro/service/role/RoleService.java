@@ -10,6 +10,8 @@ import com.ueboot.core.service.BaseService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 /**
  * Created on 2018-08-21 09:40:34
  *
@@ -23,7 +25,7 @@ public interface RoleService extends BaseService<Role> {
     void deleteRole(Long[] roleIds);
 
 
-    Page<Role> findByName(Pageable pageable, String name);
+    Page<Role> findByName(Pageable pageable, String name, String system);
 
     /***
      * 统计是否有
@@ -31,4 +33,6 @@ public interface RoleService extends BaseService<Role> {
      * @return
      */
     Long statisticUserByRoleId(Long id);
+
+    List<Role> findBySystem(String optUserName);
 }

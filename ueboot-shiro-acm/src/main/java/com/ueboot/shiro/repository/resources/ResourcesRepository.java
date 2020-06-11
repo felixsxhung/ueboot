@@ -32,4 +32,5 @@ public interface ResourcesRepository extends BaseRepository<Resources, Long>,Res
     List<Resources> findByResourceType(String resourcesType);
 
 
+    List<Resources> findBySystemOrSystem(String system, String s);
 }

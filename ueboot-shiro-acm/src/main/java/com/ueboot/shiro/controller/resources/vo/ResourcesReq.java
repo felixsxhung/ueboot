@@ -29,6 +29,8 @@ public class ResourcesReq {
     private String name;
     @NotBlank
     private String resourceType;
+    @NotBlank
+    private String system;
     private String url;
     private String iconName;
     private String fontColor;

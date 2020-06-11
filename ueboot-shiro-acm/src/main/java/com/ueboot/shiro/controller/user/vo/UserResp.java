@@ -26,6 +26,8 @@ public class UserResp {
     private Long id;
     private String orgCode;
     private String userName;
+    private String system;
+    private String type;
     private String roleNames;
     private String roleIds;
     private boolean locked;

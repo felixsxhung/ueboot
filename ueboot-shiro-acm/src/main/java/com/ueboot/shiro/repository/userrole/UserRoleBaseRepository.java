@@ -5,7 +5,10 @@
 */
 package com.ueboot.shiro.repository.userrole;
 
+import com.ueboot.shiro.entity.Role;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
 * 1.这里可以写基于StringQuery方式的自定义的接口，但是需要在实现类UserRoleRepositoryImpl当中进行实现，
