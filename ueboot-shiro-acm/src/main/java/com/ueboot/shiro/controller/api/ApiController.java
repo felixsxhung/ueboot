@@ -13,8 +13,6 @@ import com.ueboot.shiro.service.resources.ResourcesService;
 import com.ueboot.shiro.service.user.UserService;
 import com.ueboot.shiro.shiro.ShiroEventListener;
 import com.ueboot.shiro.shiro.ShiroService;
-import com.ueboot.shiro.shiro.UserRealm;
-import com.ueboot.shiro.shiro.cache.RedisCache;
 import com.ueboot.shiro.shiro.handler.ShiroExceptionHandler;
 import com.ueboot.shiro.shiro.processor.ShiroProcessor;
 import com.ueboot.shiro.util.PasswordUtil;
@@ -23,17 +21,13 @@ import io.swagger.annotations.ApiOperation;
 import jodd.datetime.JDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.apache.shiro.cache.Cache;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -64,18 +58,14 @@ public class ApiController {
 
     private final ShiroEventListener shiroEventListener;
 
-    private final UserRealm userRealm;
-
-
     @Autowired
     public ApiController(ShiroProcessor shiroProcessor, ResourcesService resourcesService,
-                         UserService userService, ShiroService shiroService, ShiroEventListener shiroEventListener,UserRealm userRealm) {
+                         UserService userService, ShiroService shiroService, ShiroEventListener shiroEventListener) {
         this.shiroProcessor = shiroProcessor;
         this.resourcesService = resourcesService;
         this.userService = userService;
         this.shiroService = shiroService;
         this.shiroEventListener = shiroEventListener;
-        this.userRealm = userRealm;
     }
 
     @PostMapping(value = "/public/login")
@@ -173,9 +163,7 @@ public class ApiController {
         parents.forEach((p) -> {
             Resources parent = resourcesMap.get(p.getId());
             if (parent == null) {
-                Iterator<Resources> it = groups.iterator();
-                while (it.hasNext()) {
-                    Resources g = it.next();
+                for (Resources g : groups) {
                     if (p.getId().equals(g.getId())) {
                         body.add(assembleMenuVo(g));
                         groups.remove(g);

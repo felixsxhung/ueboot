@@ -19,6 +19,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "PROPERTY_SYS_ROLE")
 public class Role extends AbstractVersionEntity<Long> {
+    public static final String TYPE_MANAGEMENT = "management";
     public static final String TYPE_GENERAL = "general";
 
     @Id

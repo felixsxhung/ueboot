@@ -28,6 +28,8 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.ueboot.shiro.entity.Role.TYPE_MANAGEMENT;
+
 
 /**
  * Created on 2018-08-21 09:40:34
@@ -91,6 +93,9 @@ public class RoleController {
             }
             User loginUser = this.userService.findByUserName(optUserName);
             entity.setSystem(loginUser.getSystem());
+            if ("system".equals(loginUser.getSystem())) {
+                entity.setType(TYPE_MANAGEMENT);
+            }
         } else {
             entity = roleService.get(req.getId());
         }

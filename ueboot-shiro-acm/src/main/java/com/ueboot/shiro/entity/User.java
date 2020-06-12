@@ -23,6 +23,8 @@ import java.util.Date;
 @Table(name = "PROPERTY_SYS_USER")
 public class User extends AbstractVersionEntity<Long> {
 
+    public static final String TYPE_MANAGEMENT = "management";
+
     public static final String TYPE_GENERAL = "general";
     @Id
     @Column(name = "ID")

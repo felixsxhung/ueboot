@@ -34,6 +34,8 @@ import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.util.Date;
 
+import static com.ueboot.shiro.entity.User.TYPE_MANAGEMENT;
+
 
 /**
  * Created on 2018-08-14 10:47:55
@@ -86,6 +88,9 @@ public class UserController {
             }
             User loginUser = this.userService.findByUserName(optUserName);
             entity.setSystem(loginUser.getSystem());
+            if("system".equals(loginUser.getSystem())){
+                entity.setType(TYPE_MANAGEMENT);
+            }
         } else {
             entity = userService.findById(req.getId());
         }
