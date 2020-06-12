@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.Assert;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -36,7 +37,6 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- *
  * ueboot-shiro 对外提供Api接口（用户登录、退出、验证码、用户菜单、）
  *
  * @author yangkui
@@ -59,8 +59,7 @@ public class ApiController {
     private final ShiroEventListener shiroEventListener;
 
     @Autowired
-    public ApiController(ShiroProcessor shiroProcessor, ResourcesService resourcesService,
-                         UserService userService, ShiroService shiroService, ShiroEventListener shiroEventListener) {
+    public ApiController(ShiroProcessor shiroProcessor, ResourcesService resourcesService, UserService userService, ShiroService shiroService, ShiroEventListener shiroEventListener) {
         this.shiroProcessor = shiroProcessor;
         this.resourcesService = resourcesService;
         this.userService = userService;
@@ -69,7 +68,7 @@ public class ApiController {
     }
 
     @PostMapping(value = "/public/login")
-    @ApiOperation(value = "用户登录",notes = "校验码的获取参加校验码获取接口，返回接口后台可以自定义")
+    @ApiOperation(value = "用户登录", notes = "校验码的获取参加校验码获取接口，返回接口后台可以自定义")
     @ApiImplicitParam(name = "params", value = "登录接口参数", required = true, dataType = "LoginVo")
     public Response<Map<String, Object>> login(@RequestBody LoginVo params, HttpServletRequest request) {
         HttpSession session = request.getSession(true);
@@ -81,7 +80,28 @@ public class ApiController {
             session.setAttribute(CAPTCHA_KEY, "");
             throw new BusinessException("验证码不正确!");
         }
-        String loginMessage="";
+        if (!Optional.ofNullable(params.getUsername()).isPresent()) {
+            throw new BusinessException("用户名不能为空！");
+        }
+        if (!Optional.ofNullable(params.getPassword()).isPresent()) {
+            throw new BusinessException("密码不能为空！");
+        }
+        Object object = this.shiroService.getUser(params.getUsername());
+        if (!Optional.ofNullable(object).isPresent()) {
+            throw new BusinessException("用户不存在");
+        }
+        User user = new User();
+        BeanUtils.copyProperties(object, user);
+        if (user.isLocked()) {
+            throw new BusinessException("您的用户名已被锁定，请在1小时后进行登录 或 请联系你的管理员进行处理！");
+        }
+        if (user.getCredentialExpiredDate() != null && new Date().compareTo(user.getCredentialExpiredDate()) > -1) {
+            throw new BusinessException("密码已经过期，请联系你的管理员进行处理！");
+        }
+        if (!user.isValid()) {
+            throw new BusinessException("当前用户已经被禁用");
+        }
+        String loginMessage = "";
         shiroEventListener.beforeLogin(params.getUsername(), params.getCaptcha());
         ShiroExceptionHandler.set(params.getUsername());
         this.shiroProcessor.login(params.getUsername(), params.getPassword());
@@ -189,6 +209,7 @@ public class ApiController {
      *
      * @param request  request
      * @param response response
+     *
      * @throws IOException IOException
      */
     @RequestMapping(value = "/public/captcha", method = RequestMethod.GET)
@@ -204,23 +225,23 @@ public class ApiController {
         int codeCount = 4;
         int w = 200;
         int h = 80;
-        if(StrUtil.isNotBlank(codeCountStr)){
+        if (StrUtil.isNotBlank(codeCountStr)) {
             codeCount = Integer.parseInt(codeCountStr);
         }
-        if(StrUtil.isNotBlank(widthStr)){
+        if (StrUtil.isNotBlank(widthStr)) {
             w = Integer.parseInt(widthStr);
         }
-        if(StrUtil.isNotBlank(heightStr)){
+        if (StrUtil.isNotBlank(heightStr)) {
             h = Integer.parseInt(heightStr);
         }
 
-        LineCaptcha captcha = CaptchaUtils.getLineCaptcha(w,h,codeCount);
+        LineCaptcha captcha = CaptchaUtils.getLineCaptcha(w, h, codeCount);
         try {
             HttpSession session = request.getSession();
             session.setAttribute(CAPTCHA_KEY, captcha.getCode().toLowerCase());
             ImageIO.write(captcha.getImage(), "jpg", response.getOutputStream());
         } catch (IOException e) {
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
             throw new BusinessException("验证码生成异常");
         }
     }

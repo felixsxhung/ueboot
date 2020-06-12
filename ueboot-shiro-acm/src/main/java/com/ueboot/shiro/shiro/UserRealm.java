@@ -1,5 +1,6 @@
 package com.ueboot.shiro.shiro;
 
+import com.ueboot.core.exception.BusinessException;
 import com.ueboot.shiro.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.*;
@@ -54,28 +55,28 @@ public class UserRealm extends AuthorizingRealm {
         UsernamePasswordToken upToken = (UsernamePasswordToken) token;
         Optional<String> usernameOptional = Optional.ofNullable(upToken.getUsername());
         if (!usernameOptional.isPresent()) {
-            throw new AuthenticationException("用户名不能为空！");
+            throw new BusinessException("用户名不能为空！");
         }
         Optional<Object> passwordOptional = Optional.ofNullable(upToken.getPassword());
         if (!passwordOptional.isPresent()) {
-            throw new AuthenticationException("密码不能为空！");
+            throw new BusinessException("密码不能为空！");
         }
         Object object = this.shiroService.getUser(usernameOptional.get());
         if (object == null) {
-            throw new AuthenticationException("用户不存在");
+            throw new BusinessException("用户不存在");
         }
         User user = new User();
         BeanUtils.copyProperties(object, user);
         Assert.notNull(user.getUserName(), "shiroService返回的对象不能缺少userName属性");
         Assert.notNull(user.getPassword(), "shiroService返回的对象不能缺少password属性");
         if (user.isLocked()) {
-            throw new LockedAccountException("您的用户名已被锁定，请在1小时后进行登录 或 请联系你的管理员进行处理！");
+            throw new BusinessException("您的用户名已被锁定，请在1小时后进行登录 或 请联系你的管理员进行处理！");
         }
         if (user.getCredentialExpiredDate() != null && new Date().compareTo(user.getCredentialExpiredDate()) > -1) {
-            throw new ExpiredCredentialsException("密码已经过期，请联系你的管理员进行处理！");
+            throw new BusinessException("密码已经过期，请联系你的管理员进行处理！");
         }
         if (!user.isValid()) {
-            throw new DisabledAccountException("当前用户已经被禁用");
+            throw new BusinessException("当前用户已经被禁用");
         }
         ByteSource credentialsSalt = ByteSource.Util.bytes(user.getUserName());
         //判断密码是否一致，会在父类里面执行 ,与数据库中用户名和密码进行比对，密码盐值加密，第4个参数传入realName
