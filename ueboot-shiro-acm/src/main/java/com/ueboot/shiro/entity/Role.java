@@ -10,6 +10,7 @@ import javax.persistence.*;
 
 /**
  * 用户角色
+ *
  * @author yangkui
  */
 @Setter
@@ -18,6 +19,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "PROPERTY_SYS_ROLE")
 public class Role extends AbstractVersionEntity<Long> {
+    public static final String TYPE_GENERAL = "general";
 
     @Id
     @Column(name = "ID")
@@ -31,6 +33,10 @@ public class Role extends AbstractVersionEntity<Long> {
     /** 所属系统（finance 财务，property 物业，emergency 紧急调度） */
     @Column(name = "SYSTEM")
     private String system;
+
+    /** 角色分类（management管理，general普通） */
+    @Column(name = "TYPE")
+    private String type = TYPE_GENERAL;
 
     /** 角色描述 */
     @Column(name = "DESCRIPTION")

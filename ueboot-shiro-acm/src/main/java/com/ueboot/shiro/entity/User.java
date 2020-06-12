@@ -23,7 +23,7 @@ import java.util.Date;
 @Table(name = "PROPERTY_SYS_USER")
 public class User extends AbstractVersionEntity<Long> {
 
-    public static final String TYPE_USER = "user";
+    public static final String TYPE_GENERAL = "general";
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,9 +33,9 @@ public class User extends AbstractVersionEntity<Long> {
     @Column(name = "SYSTEM")
     private String system;
 
-    /** 用户类型：管理员 admin , 用户 user */
+    /** 用户类型：管理员 management , 用户 general */
     @Column(name = "TYPE")
-    private String type = TYPE_USER;
+    private String type = TYPE_GENERAL;
 
     /** 用户名 */
     @Column(name = "USERNAME")
