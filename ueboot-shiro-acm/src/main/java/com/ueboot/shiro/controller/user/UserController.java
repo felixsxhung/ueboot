@@ -63,7 +63,7 @@ public class UserController {
 
         String optUserName = (String) SecurityUtils.getSubject().getPrincipal();
         User loginUser = this.userService.findByUserName(optUserName);
-        Page<User> entities = userService.findBy(pageable, req.getUsername(), loginUser.getSystem());
+        Page<User> entities = userService.findBy(pageable, req.getUsername(), loginUser.getSystem(), optUserName);
         Page<UserResp> body = entities.map(entity -> {
             UserResp resp = new UserResp();
             BeanUtils.copyProperties(entity, resp);

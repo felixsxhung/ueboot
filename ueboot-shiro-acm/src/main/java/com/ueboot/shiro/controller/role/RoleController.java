@@ -17,7 +17,6 @@ import com.ueboot.shiro.service.user.UserService;
 import com.ueboot.shiro.shiro.ShiroEventListener;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

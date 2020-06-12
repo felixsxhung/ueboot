@@ -75,8 +75,8 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     @Override
-    public Page<User> findBy(Pageable pageable, String username, String system) {
-        return this.userRepository.pagingBy(pageable, username, system);
+    public Page<User> findBy(Pageable pageable, String username, String system, String optUserName) {
+        return this.userRepository.pagingBy(pageable, username, system, optUserName);
     }
 
     /**

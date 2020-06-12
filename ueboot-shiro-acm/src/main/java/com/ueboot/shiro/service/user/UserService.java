@@ -39,5 +39,5 @@ public interface UserService extends BaseService<User> {
      */
     void lockByUserName(String username);
 
-    Page<User> findBy(Pageable pageable, String username, String system);
+    Page<User> findBy(Pageable pageable, String username, String system, String optUserName);
 }

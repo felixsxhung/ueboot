@@ -19,5 +19,5 @@ import org.springframework.data.domain.Pageable;
 * @since 2.1.0 by ueboot-generator
 */
 public interface UserBaseRepository  {
-    Page<User> pagingBy(Pageable pageable, String username, String system);
+    Page<User> pagingBy(Pageable pageable, String username, String system, String optUserName);
 }
