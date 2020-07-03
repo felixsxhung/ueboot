@@ -131,13 +131,14 @@ public class ApiController {
     public Response<Void> updatePassword(@RequestBody UpdatePasswordReq req) {
         String userName = (String) SecurityUtils.getSubject().getPrincipal();
         //加密旧密码
-        String oldPassword = PasswordUtil.sha512(userName, req.getOldPassword().toLowerCase());
+        String oldPassword = PasswordUtil.sha512(userName, req.getOldPassword());
+
         //加密新密码
-        String newPassword = PasswordUtil.sha512(userName, req.getNewPassword().toLowerCase());
         User user = userService.findByUserName(userName);
         if (!user.getPassword().equals(oldPassword)) {
             throw new BusinessException("原密码输入错误,请重新输入");
         }
+        String newPassword = PasswordUtil.sha512(userName, req.getNewPassword());
         user.setPassword(newPassword);
         JDateTime dateTime = new JDateTime();
         //默认密码过期日期为x个月，x个月后要求更换密码
@@ -147,7 +148,7 @@ public class ApiController {
 
         // 更新密码日志记录
         this.shiroEventListener.updatePasswordEvent(userName);
-        return new Response<Void>();
+        return new Response<>();
     }
 
 
