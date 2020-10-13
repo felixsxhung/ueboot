@@ -21,7 +21,6 @@ import jodd.datetime.JDateTime;
 import jodd.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -88,7 +87,7 @@ public class UserController {
             }
             User loginUser = this.userService.findByUserName(optUserName);
             entity.setSystem(loginUser.getSystem());
-            if("system".equals(loginUser.getSystem())){
+            if ("system".equals(loginUser.getSystem())) {
                 entity.setType(TYPE_MANAGEMENT);
             }
         } else {
@@ -96,8 +95,8 @@ public class UserController {
         }
 
         BeanUtils.copyProperties(req, entity, "type", "system", "password");
-        if (StringUtil.isNotBlank(req.getPassword())) {
-            entity.setPassword(PasswordUtil.sha512(entity.getUserName(), req.getPassword()));
+        if (StringUtil.isNotBlank(req.pwd())) {
+            entity.setPassword(PasswordUtil.sha512(entity.getUserName(), req.pwd()));
             if (req.getCredentialExpiredDate() == null) {
                 JDateTime dateTime = new JDateTime();
                 //默认密码过期日期为x个月，x个月后要求更换密码

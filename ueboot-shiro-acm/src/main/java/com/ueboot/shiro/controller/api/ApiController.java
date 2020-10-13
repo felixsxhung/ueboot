@@ -23,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.util.Assert;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -83,7 +82,7 @@ public class ApiController {
         if (!Optional.ofNullable(params.getUsername()).isPresent()) {
             throw new BusinessException("用户名不能为空！");
         }
-        if (!Optional.ofNullable(params.getPassword()).isPresent()) {
+        if (!Optional.ofNullable(params.pwd()).isPresent()) {
             throw new BusinessException("密码不能为空！");
         }
         Object object = this.shiroService.getUser(params.getUsername());
@@ -104,7 +103,7 @@ public class ApiController {
         String loginMessage = "";
         shiroEventListener.beforeLogin(params.getUsername(), params.getCaptcha());
         ShiroExceptionHandler.set(params.getUsername());
-        this.shiroProcessor.login(params.getUsername(), params.getPassword());
+        this.shiroProcessor.login(params.getUsername(), params.pwd());
         if (!StringUtils.isEmpty(params.getUsername())) {
             shiroEventListener.afterLogin(params.getUsername(), true, loginMessage);
         }
@@ -131,14 +130,14 @@ public class ApiController {
     public Response<Void> updatePassword(@RequestBody UpdatePasswordReq req) {
         String userName = (String) SecurityUtils.getSubject().getPrincipal();
         //加密旧密码
-        String oldPassword = PasswordUtil.sha512(userName, req.getOldPassword());
+        String oldPassword = PasswordUtil.sha512(userName, req.oldPwd());
 
         //加密新密码
         User user = userService.findByUserName(userName);
         if (!user.getPassword().equals(oldPassword)) {
             throw new BusinessException("原密码输入错误,请重新输入");
         }
-        String newPassword = PasswordUtil.sha512(userName, req.getNewPassword());
+        String newPassword = PasswordUtil.sha512(userName, req.newPwd());
         user.setPassword(newPassword);
         JDateTime dateTime = new JDateTime();
         //默认密码过期日期为x个月，x个月后要求更换密码
